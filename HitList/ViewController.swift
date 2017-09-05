@@ -11,8 +11,8 @@ import CoreData
 
 class ViewController: UIViewController {
 
-    @IBOutlet var tableView: UITableView!
-    var people: [NSManagedObject] = []
+    @IBOutlet var tableView: UITableView! //Puts table view as an object in this view controller
+    var people: [NSManagedObject] = [] //Keeps an array of core data objects
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,26 +26,29 @@ class ViewController: UIViewController {
 
     @IBAction func addName(_ sender: UIBarButtonItem) { //Add a name to the list
         
-        let alert = UIAlertController(title: "New Name", message: "Add a new name", preferredStyle: .alert)
+        let alert = UIAlertController(title: "New Name", message: "Add a new name", preferredStyle: .alert) //Sends alert when addName button is pressed
         
         let saveAction = UIAlertAction(title: "Save", style: .default) {
-            [unowned self] action in
+            [unowned self] action in //Creates closure action that saves data to disc
             
+            //Checks to see if anything is in textField, lets nameToSave be the text of textField
             guard let textField = alert.textFields?.first,
                 let nameToSave = textField.text else {
                     return
             }
             
-            self.save(name: nameToSave)
-            self.tableView.reloadData()
+            self.save(name: nameToSave) //Goes to save function
+            self.tableView.reloadData() //Reloads the table data
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) //Does nothing when pressed
         
+        //Adds text field, adds actions
         alert.addTextField()
         alert.addAction(saveAction)
         alert.addAction(cancelAction)
         
+        //Presents alert
         present(alert, animated: true) 
     }
     
@@ -89,7 +92,7 @@ class ViewController: UIViewController {
         //Fetches from Core Data all objects from the Entity Person
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Person")
         
-        //Hand the fetch request over to the managed object context to do heavy lifting 
+        //Hand the fetch request over to the managed object context to do heavy lifting
         do {
             people = try managedContext.fetch(fetchRequest)
         } catch let error as NSError {
@@ -105,9 +108,10 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return people.count
+        return people.count //Creates number of rows for the table view
     }
     
+    //Populates the cell with data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let person = people[indexPath.row]
@@ -115,6 +119,7 @@ extension ViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
         cell.textLabel?.text = person.value(forKeyPath: "name") as? String
+        
         return cell
     }
     
